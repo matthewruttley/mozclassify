@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Implements various Mozilla classifiers in Python (LICA, LWCA, LICA+DFR etc).
+Python implementation of Latent IAB Category Allocation (LICA)
 Usage:
 > import mozclassify
 > LICA = mozclassify.LICA()
