@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>MoVelo</title>
+		<link href="static/css/bootstrap.min.css" rel="stylesheet">
+		<link href="static/css/movelo.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3 headerarea">
+					<h2 class='title'>Results for URL:</h2>
+					<h2>
+						<form name='url_form' action='/' method='get'>
+							<input type='text' value='{% if data %}{{data.url}}{% endif %}' class='form-control domain' name='url'>
+						</form>
+					</h2>
+				</div>
+			</div>
+			<div class="row tilerow">
+				<div class="col-md-4 tile">
+					<div class='internaltile'>
+						<h3>Content</h3>
+						<p></p>
+					</div>
+				</div>
+				<div class="col-md-4 tile">
+					<div class='internaltile'>
+						<h3>MozCat Tier 1</h3>
+						<p>{%if data%}{{data.mozcat_tier_1}}{% endif %}</p>
+					</div>
+				</div>
+				<div class="col-md-4 tile">
+					<div class='internaltile'>
+						<h3>MozCat Tier 2</h3>
+						<p>{%if data%}{{data.mozcat_tier_2}}{% endif %}</p>
+					</div>
+				</div>
+			</div>
+			<div class="row tilerow">
+				<div class="col-md-4 tile">
+					<div class='internaltile'>
+						<h3>IAB Content Rating</h3>
+						<p>{%if data%}{{data.iab_content_rating}}{% endif %}</p>
+					</div>
+				</div>
+				<div class="col-md-4 tile">
+					<div class='internaltile'>
+						<h3>IAB non-standard content</h3>
+						<p>{%if data%}{{data.iab_non_standard_content}}{% endif %}</p>
+					</div>
+				</div>
+				<div class="col-md-4 tile">
+					<div class='internaltile'>
+						<h3>IAB Illegal Content</h3>
+						<p>{%if data%}{{data.iab_illegal_content}}{% endif %}</p>
+					</div>
+				</div>
+			</div>
+			<div class="row tilerow">
+				<div class="col-md-4 tile">
+					<div class='internaltile'>
+						<h3>Brand Safe</h3>
+						<p>{%if data%}{{data.brand_safe}}{% endif %}</p>
+					</div>
+				</div>
+				<div class="col-md-4 tile">
+					<div class='internaltile'>
+						<h3>Malicious</h3>
+						<p>{%if data%}{{data.malicious}}{% endif %}</p>
+					</div>
+				</div>
+				<div class="col-md-4 tile">
+					<div class='internaltile'>
+						<h3>Objectionable</h3>
+						<p>{%if data%}{{data.objectionable}}{% endif %}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

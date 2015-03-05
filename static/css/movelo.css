@@ -1,0 +1,67 @@
+body {
+  background-color: black;
+}
+
+.headerarea {
+  margin-bottom: 40px;
+}
+
+.domain {
+  margin: 0 auto;
+  text-align: center;
+  border: 1px solid #ff8a18;
+  font-family: Lato, Arial, Helvetica, sans-serif;
+  color: #ff8a18;
+  letter-spacing: 0.1em;
+  font-size: 24px;
+  width: 600px;
+  background-color: black;
+  border-radius: 0;
+}
+
+.title {
+  font-family: Lato, Arial, Helvetica, sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 24px;
+  color: #fff;
+}
+
+/* Tile stuff */
+
+.internaltile {
+  margin: 5px 5px 25px 5px;
+  border: 1px solid rgb(51, 153, 102);
+  -webkit-box-shadow: rgb(27, 187, 158) 0px 0px 3px 0px;
+  padding: 5px;
+  min-height: 182px;
+  min-width: 330px;
+  background-color: rgb(0, 119, 119);
+}
+
+.internaltile:hover {
+  background-color: rgb(0, 17, 17);
+  color: black !important;
+}
+
+.tile {
+  font-family: 'Pathway Gothic One', Lato, Arial, Helvetica, sans-serif;
+  display: inline-block;
+}
+
+.tile h3 {
+  font-family: 'Pathway Gothic One', Lato, Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  color: #ccc;
+  text-align:center;
+}
+
+.tile p {
+  color: #6ce0cb;
+  font-family: "Pathway Gothic One", Lato, Arial, Helvetica, sans-serif;
+  text-shadow: 0px 0px 8px #1bbb9e;
+  font-weight: bold;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  text-align: center;
+}
