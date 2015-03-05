@@ -158,7 +158,9 @@ class LICA:
 		matches = sorted(matches.items(), key=lambda x: sum(matches[x[0]].values()), reverse=True)
 		
 		#get the top_level category
-		if len(matches) == 1:
+		if len(matches) == 0:
+			return ['uncategorized', '']
+		elif len(matches) == 1:
 			top_level = matches[0][0]
 		else:
 			if sum(matches[0][1].values()) == sum(matches[1][1].values()): #special case if the top two are the same
