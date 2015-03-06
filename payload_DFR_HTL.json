@@ -1,6 +1,12 @@
-
-
 {
+  "mozilla.org": {
+	"__ANY": [
+		[
+			"technology & computing",
+			"general"
+		]
+	]
+  },
   "cartrade.com": {
     "\/car-bike-news": [
       [
