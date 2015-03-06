@@ -177,7 +177,7 @@ class DFR:
 		def isWhiteListed(hosts, whiteList):
 			"""checks if any of the provided scoped hosts are white listed"""
 			for i in hosts:
-				if host in whiteList:
+				if i in whiteList:
 					return True
 			return False
 		
