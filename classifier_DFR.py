@@ -41,7 +41,7 @@ class DFR:
 		if len(interests) == 0:
 			return ['uncategorized', 'unknown']
 		elif len(interests) == 1:
-			return finalInterests[0]
+			return finalInterests[0][0]
 		else:
 			#check if the top x have the same number of hits
 			if finalInterests[0][1] > finalInterests[1][1]:
@@ -198,21 +198,22 @@ class DFR:
 					# we do not expect same page belong to two different genre
 					break
 		
-		domainRule = self.dfr[baseDomain]
-		
-		keyLength = len(domainRule) if domainRule else 0
-		
-		if not keyLength:
-			return this.interestFinalizer(self.interests)
-		
-		if (domainRule["__ANY"]):
-			self.interests += domainRule["__ANY"]
-			keyLength -= 1
-		
-		if not keyLength:
-			return self.interestFinalizer(self.interests)
-		
-		matchRuleInterests(domainRule)
+		if baseDomain in self.dfr:
+			domainRule = self.dfr[baseDomain]
+			
+			keyLength = len(domainRule) if domainRule else 0
+			
+			if not keyLength:
+				return this.interestFinalizer(self.interests)
+			
+			if "__ANY" in domainRule:
+				self.interests += domainRule["__ANY"]
+				keyLength -= 1
+			
+			if not keyLength:
+				return self.interestFinalizer(self.interests)
+			
+			matchRuleInterests(domainRule)
 		
 		return self.interestFinalizer(self.interests)
 
