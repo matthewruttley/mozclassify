@@ -3,7 +3,9 @@
 """
 Python implementation of DFR style classifier
 
-Original version: https://raw.githubusercontent.com/mzhilyaev/pfeed/master/stats/DFRClassifier.js
+Partly copied from : https://raw.githubusercontent.com/mzhilyaev/pfeed/master/stats/DFRClassifier.js
+but with several upgrades/modifications
+
 Usage:
 > import mozclassify
 > DFR = mozclassify.DFR()
@@ -15,8 +17,7 @@ from json import load
 from urlparse import urlparse
 from re import findall
 from tldextract import extract
-
-
+from collections import Counter, defaultdict
 
 class DFR:
 	"""Object that can classify URLs using a domain-rule based approach"""
@@ -29,30 +30,46 @@ class DFR:
 		self.kSplitter = "[\s-]+"
 
 	def interestFinalizer(self, interests):
-		# This is a function to make the decision between a series of rules matched in the DFR
-		# Accepts: an array containing either lists-of-strings, or lists-of-pairs where the pairs
-		# are [string, float]
-		# Returns: [string, string, ...]
-		# Input: ["xyz",["golf",0.7],["foo",0.5],"bar"]
+		#This makes a decision between the interests presented to it
+		#Completely modified from pfeed version
 		
-		finalInterests = {}
-		highestWeight = 0
-		bestWeightedInterest = ""
+		finalInterests = defaultdict(int)
+		for interest in interests:
+			finalInterests[tuple(interest)] += 1
+		finalInterests = sorted(finalInterests.items(), key=lambda x: x[1], reverse=True)
 		
-		for item in interests:
-			if type(item) == list:
-				if item[1] > highestWeight:
-					heighestWeight = item[1]
-					bestWeightedInterest = item[0]
+		if len(interests) == 0:
+			return ['uncategorized', 'unknown']
+		elif len(interests) == 1:
+			return finalInterests[0]
+		else:
+			#check if the top x have the same number of hits
+			if finalInterests[0][1] > finalInterests[1][1]:
+				return finalInterests[0][0]
+			else:
+				#find a top-level consensus or return no-consensus
+				decision = []
+				for n, x in xrange(finalInterests[1:]):
+					if n[1] != finalInterests[x][1]: #if not equal to the previous element
+						decision = finalInterests[:n+1]
+						break
+				#now we have to check if there's any consistency
+				if len(set([x[0] for x in decision])) == 1:
+					return [finalInterests[0][0], 'general']
 				else:
-					finalInterests[item] = True
-		
-		if bestWeightedInterest:
-			finalInterests[bestWeightedInterest] = True
-		
-		return finalInterests.keys()
+					#check if there's a dominant top level, otherwise just return no-consensus
+					
+					top_levels = defaultdict(int)
+					for x in decision:
+						top_levels[x[0]] += 1
+					top_levels = sorted(top_levels.items(), key=lambda x: x[1], reverse=True)
+					
+					if top_levels[0][1] > top_levels[1][1]:
+						return [top_levels[0][0], 'general']
+					else:
+						return ['uncategorized', 'no consensus']
 	
-	def convertVisittoDFR(self, host, baseDomain, path, title, url, options):
+	def convertVisittoDFR(self, host, baseDomain, path, title, url):
 		"""Finds words and bigrams contained within the URL and title. Outputs them in a set with appropriate suffixes."""
 		
 		words = set()
@@ -64,14 +81,15 @@ class DFR:
 			
 			if "prefix" not in options: options['prefix'] = ""
 			if "suffix" not in options: options['suffix'] = ""
+			if "clearText" not in options: options['clearText'] = False
 			
 			prev = ""
 			for chunk in chunks: 
-				words.updated([prefix + chunk + suffix])
+				words.update([options['prefix'] + chunk + options['suffix']])
 				if options['clearText']:
 					words.update([chunk])
 				if prev: #add bigram
-					words.update([prefix + prev + chunk + suffix])
+					words.update([options['prefix'] + prev + chunk + options['suffix']])
 					if options['clearText']:
 						words.update([prev + chunk])
 				prev = chunk
@@ -83,14 +101,15 @@ class DFR:
 		addToWords(self.tokenize(url), {"suffix": "_u", "clearText": True})
 		
 		# parse and add hosts chunks
-		addToWords(host.split("."), {"suffix": "."})
+		hostChunks = host.split(".")
+		addToWords(hostChunks, {"suffix": "."})
 		
 		# add subdomains under __SCOPED keyword
 		scopedHosts = [baseDomain]
 		hostString = baseDomain
 		
 		for chunk in hostChunks:
-			hostString = ".".join(chunk, hostString)
+			hostString = ".".join([chunk, hostString])
 			scopedHosts.append(hostString)
 		
 		# parse and add path chunks
@@ -113,16 +132,16 @@ class DFR:
 		tld = extract(url)
 		
 		#get the specific components
-		baseDomain = ".".join(tld.domain, tld.suffix)
+		baseDomain = ".".join([tld.domain, tld.suffix])
 		host = tld.subdomain
 		path = parsed_url.path
 		
 		#setup
-		interests = []
+		self.interests = []
 		
 		# check if rules are applicable at all
 		if baseDomain not in self.dfr and "__ANY" not in self.dfr:
-			return interests
+			return self.interests
 		
 		# populate words object with visit data
 		ret = self.convertVisittoDFR(host, baseDomain, path, title, url)
@@ -141,27 +160,26 @@ class DFR:
 			"""match a rule and collect matched interests"""
 			for key in rule.iterkeys():
 				if (key == "__HOME" and (path == null or path == "" or path == "/" or path.startswith("/?"))):
-					interests = interests.append(rule[key])
+					self.interests += rule[key]
 				else:
-					if ("__" not in key and matchedAllTokens(findall(kSplitter, key))):
-						interests = interests.append(rule[key])
+					if ("__" not in key and matchedAllTokens(findall(self.kSplitter, key))):
+						self.interests += rule[key]
 		
 		def matchANYRuleInterests(rule):
 			""" __ANY rule does not support multiple keys in the rule
 				__ANY rule matches any single term rule - but not the term combination
 				as in "/foo bar_u baz_t"
 			"""
-			for key in xrange(words):
-				ruleInts = rule[key]
-				if(ruleInts):
-					interests.append(ruleInts)
+			for word in words:
+				if word in rule:
+					self.interests += rule[word]
 		
 		def isWhiteListed(hosts, whiteList):
 			"""checks if any of the provided scoped hosts are white listed"""
 			for i in hosts:
 				if host in whiteList:
 					return True
-			return false
+			return False
 		
 		# process __ANY rule first
 		if (self.dfr["__ANY"]):
@@ -173,10 +191,8 @@ class DFR:
 			#check if scopedHosts are white-listed in any of the __SCOPED rule
 			#and if so apply the rule
 			
-			for i in xrange(self.dfr["__SCOPES"]):
+			for scopedRule in self.dfr["__SCOPES"]:
 				# the scopedRule is of the form {"__HOSTS": {"foo.com", "bar.org"}, "__ANY": {... the rule...}}
-				
-				scopedRule = this.dfr["__SCOPES"][i]
 				if isWhiteListed(scopedHosts, scopedRule["__HOSTS"]):
 					matchANYRuleInterests(scopedRule["__ANY"])
 					# we do not expect same page belong to two different genre
@@ -187,39 +203,16 @@ class DFR:
 		keyLength = len(domainRule) if domainRule else 0
 		
 		if not keyLength:
-			return this.interestFinalizer(interests)
+			return this.interestFinalizer(self.interests)
 		
-		if (domainRule["__ANY"]) {
-		interests = interests.concat(domainRule["__ANY"]);
-		keyLength--;
-		}
+		if (domainRule["__ANY"]):
+			self.interests += domainRule["__ANY"]
+			keyLength -= 1
 		
-		if (!keyLength)
-		return this.interestFinalizer(interests);
+		if not keyLength:
+			return self.interestFinalizer(self.interests)
 		
-		matchRuleInterests(domainRule);
+		matchRuleInterests(domainRule)
 		
-		return this.interestFinalizer(interests);
-		},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		return self.interestFinalizer(self.interests)
 
