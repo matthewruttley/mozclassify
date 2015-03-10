@@ -141,7 +141,7 @@ class DFR:
 		"""Tokenizes a string"""
 		return findall("[a-z]{3,}", s.lower())
 
-	def classify(self, url, title=""):
+	def classify(self, url, title="", rules_only=False):
 		"""Classifies a url (and possibly the title)"""
 		
 		#parse the url
@@ -199,21 +199,22 @@ class DFR:
 			return False
 		
 		# process __ANY rule first
-		if (self.dfr["__ANY"]):
-			matchANYRuleInterests(self.dfr["__ANY"])
+		if not rules_only:
+			if (self.dfr["__ANY"]):
+				matchANYRuleInterests(self.dfr["__ANY"])
 		
-		
-		if self.dfr["__SCOPES"]:
-			#dfr has scoped rules - check for scope domains and sub-domains
-			#check if scopedHosts are white-listed in any of the __SCOPED rule
-			#and if so apply the rule
-			
-			for scopedRule in self.dfr["__SCOPES"]:
-				# the scopedRule is of the form {"__HOSTS": {"foo.com", "bar.org"}, "__ANY": {... the rule...}}
-				if isWhiteListed(scopedHosts, scopedRule["__HOSTS"]):
-					matchANYRuleInterests(scopedRule["__ANY"])
-					# we do not expect same page belong to two different genre
-					break
+		if not rules_only:
+			if self.dfr["__SCOPES"]:
+				#dfr has scoped rules - check for scope domains and sub-domains
+				#check if scopedHosts are white-listed in any of the __SCOPED rule
+				#and if so apply the rule
+				
+				for scopedRule in self.dfr["__SCOPES"]:
+					# the scopedRule is of the form {"__HOSTS": {"foo.com", "bar.org"}, "__ANY": {... the rule...}}
+					if isWhiteListed(scopedHosts, scopedRule["__HOSTS"]):
+						matchANYRuleInterests(scopedRule["__ANY"])
+						# we do not expect same page belong to two different genre
+						break
 		
 		if baseDomain in self.dfr:
 			domainRule = self.dfr[baseDomain]
