@@ -23,13 +23,13 @@ To use the title and url for either algorithm, use a named argument like: `class
 
 (Total documents tested: 1,000,001)
 
-| Algorithm |  Dataset    | Level   | Correct | Incorrect | Unknown | Precision | Recall |
-|-----------|-------------|---------|---------|-----------|---------|-----------|--------|
-|   LICA    | URLs only   | Top+Sub | 251,470 | 139,102   | 609,429 | 64.385    | 39.057 |
-|   LICA    | URLs only   | Top     |         |           |         |           |        |
-|   LICA    | URL + title | Top+Sub |         |           |         |           |        |
-|   LICA    | URL + title | Top     |         |           |         |           |        |
-|   DFR     | URLs only   | Top+Sub | 373,158 | 401,885   | 224,958 | 48.147    | 77.504 |
-|   DFR     | URLs only   | Top     |         |           |         |           |        |
-|   DFR     | URL + title | Top+Sub | 467,160 | 354,201   | 178,640 | 56.876    | 82.136 |
-|   DFR     | URL + title | Top     |         |           |         |           |        |
+| Algo |  Dataset    | Level   | Correct | Incorrect | Unknown | Precision | Recall |
+|------|-------------|---------|---------|-----------|---------|-----------|--------|
+| LICA | URLs only   | Top+Sub | 251,470 | 139,102   | 609,429 | 64.385    | 39.057 |
+| LICA | URLs only   | Top     |         |           |         |           |        |
+| LICA | URL + title | Top+Sub |         |           |         |           |        |
+| LICA | URL + title | Top     |         |           |         |           |        |
+| DFR  | URLs only   | Top+Sub | 373,158 | 401,885   | 224,958 | 48.147    | 77.504 |
+| DFR  | URLs only   | Top     |         |           |         |           |        |
+| DFR  | URL + title | Top+Sub | 467,160 | 354,201   | 178,640 | 56.876    | 82.136 |
+| DFR  | URL + title | Top     |         |           |         |           |        |
