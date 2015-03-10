@@ -21,7 +21,7 @@ For LICA+DFR
 
 (Total documents tested: 1,000,001)
 
-| Algorithm | Correct | Incorrect | Uncategorized | Precision | Recall |
-|-----------|---------|-----------|---------------|-----------|--------|
-| LICA      | 251,470 | 139,102   | 609,429       | 64.385    | 39.057 |
-| DFR       | 373,158 | 401,885   | 224,958       | 48.147    | 77.504 |
+| Algorithm |  Dataset  | Correct | Incorrect | Uncategorized | Precision | Recall |
+|-----------|-----------|---------|-----------|---------------|-----------|--------|
+| LICA      | URLs only | 251,470 | 139,102   | 609,429       | 64.385    | 39.057 |
+| DFR       | URLs only | 373,158 | 401,885   | 224,958       | 48.147    | 77.504 |
