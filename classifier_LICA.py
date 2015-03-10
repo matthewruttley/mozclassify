@@ -109,12 +109,12 @@ class LICA:
 		tldinfo = extract(url)
 		if tldinfo.domain in self.payload['ignore_domains']:
 			if tldinfo.suffix in self.payload['ignore_domains'][tldinfo.domain]:
-				return ['uncategorized', 'ignored', 1]
+				return ['uncategorized', 'ignored']
 		
 		#check if it is a single topic site
 		tld = tldinfo.domain + tldinfo.suffix
 		if tld in self.rules['domain_rules']:
-			return ['uncategorized', 'ignored', 1]
+			return ['uncategorized', 'ignored']
 		
 		#check if it is a single topic host
 		if tldinfo.subdomain:
@@ -159,7 +159,7 @@ class LICA:
 		
 		#get the top_level category
 		if len(matches) == 0:
-			return ['uncategorized', '']
+			return ['uncategorized', 'unknown']
 		elif len(matches) == 1:
 			top_level = matches[0][0]
 		else:
