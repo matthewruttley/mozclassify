@@ -33,18 +33,21 @@ class DFR:
 		#This makes a decision between the interests presented to it
 		#Completely modified from pfeed version
 		
-		#Count up tallies for [top, sub] pairs
-		finalInterests = defaultdict(int)
-		for interest in interests:
-			finalInterests[tuple(interest)] += 1
-		finalInterests = sorted(finalInterests.items(), key=lambda x: x[1], reverse=True)
-		
 		if len(interests) == 0: #if there's no result, just return uncategorized
 			return ['uncategorized', 'unknown']
-		elif len(interests) == 1: #if there's one result then return it
-			return finalInterests[0][0]
+		elif len(interests) == 1:
+			return interests[0]
 		else:
-			if finalInterests[0][1] > finalInterests[1][1]: #is the top item better than the second item?
+			
+			#Count up tallies for [top, sub] pairs
+			finalInterests = defaultdict(int)
+			for interest in interests:
+				finalInterests[tuple(interest)] += 1
+			finalInterests = sorted(finalInterests.items(), key=lambda x: x[1], reverse=True)
+			
+			if len(finalInterests) == 1: #if there's one result then return it
+				return finalInterests[0][0]
+			elif finalInterests[0][1] > finalInterests[1][1]: #is the top item better than the second item?
 				return finalInterests[0][0] #if so, just return the top item
 			else:
 				#is there a top level consensus, e.g.:
@@ -62,8 +65,7 @@ class DFR:
 				#now have something like:
 				# 2: [(sports, baseball), (sports, soccer), (religion, islam)]
 				# 1: [(folklore, astrology)]
-				
-				scores = sorted(scores.items(), reverse=True)[0] #grab the top item
+				scores = sorted(scores.items(), reverse=True)[0][1] #grab the top item
 				
 				#Counter of the top level items
 				top_levels = defaultdict(int)
