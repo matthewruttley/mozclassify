@@ -1,5 +1,5 @@
 # About
-Algorithms for URL Classification. Will implement LICA, LWCA, LICA+DFR etc
+Algorithms for URL Classification. Will implement LICA, LWCA, DFR etc
 
 # Usage
 
@@ -10,7 +10,7 @@ For LICA:
     >>> classifier.classify("http://www.coinweek.com/us-coins/the-marvelous-pogue-family-coin-collection-part-2-the-oliver-jung-1833-half-dime/")
     [u'hobbies & interests', u'coins']
 
-For LICA+DFR
+For DFR
 
     >>> import classifier_DFR
     >>> classifier = classifier_DFR.DFR()
