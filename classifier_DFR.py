@@ -33,41 +33,56 @@ class DFR:
 		#This makes a decision between the interests presented to it
 		#Completely modified from pfeed version
 		
+		#Count up tallies for [top, sub] pairs
 		finalInterests = defaultdict(int)
 		for interest in interests:
 			finalInterests[tuple(interest)] += 1
 		finalInterests = sorted(finalInterests.items(), key=lambda x: x[1], reverse=True)
 		
-		if len(interests) == 0:
+		if len(interests) == 0: #if there's no result, just return uncategorized
 			return ['uncategorized', 'unknown']
-		elif len(interests) == 1:
+		elif len(interests) == 1: #if there's one result then return it
 			return finalInterests[0][0]
 		else:
-			#check if the top x have the same number of hits
-			if finalInterests[0][1] > finalInterests[1][1]:
-				return finalInterests[0][0]
+			if finalInterests[0][1] > finalInterests[1][1]: #is the top item better than the second item?
+				return finalInterests[0][0] #if so, just return the top item
 			else:
-				#find a top-level consensus or return no-consensus
-				decision = []
-				for n, x in xrange(finalInterests[1:]):
-					if n[1] != finalInterests[x][1]: #if not equal to the previous element
-						decision = finalInterests[:n+1]
-						break
-				#now we have to check if there's any consistency
-				if len(set([x[0] for x in decision])) == 1:
-					return [finalInterests[0][0], 'general']
+				#is there a top level consensus, e.g.:
+				# 1) ((sports, baseball), 2)
+				# 2) ((sports, soccer), 2)
+				# 3) ((religion, islam), 2)
+				# 4) ((folklore, astrology), 1)
+				# in this case, we could return (sports, general)
+				
+				#make a dictionary like score: [classifications]
+				scores = defaultdict(list)
+				for interest in finalInterests:
+					scores[interest[1]].append(interest[0])
+				
+				#now have something like:
+				# 2: [(sports, baseball), (sports, soccer), (religion, islam)]
+				# 1: [(folklore, astrology)]
+				
+				scores = sorted(scores.items(), reverse=True)[0] #grab the top item
+				
+				#Counter of the top level items
+				top_levels = defaultdict(int)
+				for decision in scores:
+					top_levels[decision[0]] += 1
+				
+				top_levels = sorted(top_levels.items(), key=lambda x: x[1], reverse=True)
+				
+				# this would produce:
+				# sports: 2
+				# religion: 1
+				
+				if len(top_levels) == 1:
+					return [top_levels[0][0], "general"]
 				else:
-					#check if there's a dominant top level, otherwise just return no-consensus
-					
-					top_levels = defaultdict(int)
-					for x in decision:
-						top_levels[x[0]] += 1
-					top_levels = sorted(top_levels.items(), key=lambda x: x[1], reverse=True)
-					
 					if top_levels[0][1] > top_levels[1][1]:
-						return [top_levels[0][0], 'general']
+						return [top_levels[0][0], "general"]
 					else:
-						return ['uncategorized', 'no consensus']
+						return ["uncategorized", "no consensus"]
 	
 	def convertVisittoDFR(self, host, baseDomain, path, title, url):
 		"""Finds words and bigrams contained within the URL and title. Outputs them in a set with appropriate suffixes."""
