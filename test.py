@@ -172,8 +172,6 @@ def test_algorithms(top_only=False):
 					
 					decision = decision[0] #get top level
 					topics = set([moreover_to_mozcat[x][0] for x in document['topics'] if x in moreover_to_mozcat])
-					#yn = True if decision in topics else False
-					#print str(yn) + " : " + decision[0] + " --> " + str(topics)
 					
 					if decision in topics:
 						results[algorithm]['correct'] += 1
