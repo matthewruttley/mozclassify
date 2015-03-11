@@ -153,9 +153,9 @@ def test_algorithms():
 		
 		#classify (if they are in an object like this, they are easier to process)
 		decisions = {
-			#'dfr': dfr.classify(document['url']),
-			#'lica': lica.classify(document['url']),
-			#'dfr_title': dfr.classify(document['url'], title=document['title']),
+			'dfr': dfr.classify(document['url']),
+			'lica': lica.classify(document['url']),
+			'dfr_title': dfr.classify(document['url'], title=document['title']),
 			'dfr_title_rules_only': dfr.classify(document['url'], title=document['title'], rules_only=True),
 			'dfr_rules_only': dfr.classify(document['url'], rules_only=True),
 		}
