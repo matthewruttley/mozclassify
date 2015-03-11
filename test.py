@@ -48,25 +48,10 @@ def check_mappings():
 		return True
 
 def test_functionality():
-	"""Tests the output of each algorithm for specific URLs, to make sure that they are returning correctly"""
-	
-	#{
-	#	"mozilla.org": {
-	#		"__ANY": [
-	#			["technology & computing", "general"]
-	#		]
-	#	},
-	#	"cartrade.com": {
-	#		"\/car-bike-news": [
-	#			["automotive", "general"]
-	#		]
-	#	},
-	#	"lifenews.com": {
-	#		"__ANY": [
-	#			["society", "general"]
-	#		]
-	#}
-	
+	"""	Tests the output of each algorithm for specific URLs, to make sure that they are returning correctly
+		Easy to use by doing: python -c "import test;test.test_functionality()"
+	"""
+		
 	#set things up
 	algorithms = [
 		{
