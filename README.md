@@ -20,17 +20,19 @@ For DFR
 Options:
 
 * To use the title as well, use a named argument like: `classifier.classify("http://domain.com", title="Interesting Coin Website")`
-* To use DFR rules only (i.e. no overall LICA style __ANY matching), add a `rules_only=True` argument
+* To use DFR rules only (i.e. no overall LICA-style matching for unknown domains), add a `rules_only=True` argument
 
 # Performance
 
 * Total documents (i.e. url/title pairs) tested: 1,000,001
+* Level refers to returning MozCat level 1 or both 1+2
+
 
 | Algo      |  Dataset  | Lvl | Correct | Incorr. | Unknown | Prec.  | Recall |
 |-----------|-----------|-----|---------|---------|---------|--------|--------|
 | LICA      | URLs only | 1+2 | 251,470 | 139,102 | 609,429 | 64.385 | 39.057 |
 | LICA      | URLs only | 1   |         |         |         |        |        |
-| LICA      | URL+title | 1+2 |         |         |         |        |        |
+| LICA      | URL+title | 1+2 | 252,381 | 158,486 | 589,134 | 61.426 | 41.087 |
 | LICA      | URL+title | 1   |         |         |         |        |        |
 | DFR (all) | URLs only | 1+2 | 373,158 | 401,885 | 224,958 | 48.147 | 77.504 |
 | DFR (all) | URLs only | 1   |         |         |         |        |        |
