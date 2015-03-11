@@ -101,7 +101,7 @@ class LICA:
 			path = path_rule.split('/')[1]
 			self.path_rules[tld][path] = category
 	
-	def classify(self, url):
+	def classify(self, url, title=""):
 		"""Returns a classification in the format [top_level, sub_level]
 		This fits with the mozcat heirarchy/taxonomy: https://github.com/matthewruttley/mozcat"""
 		
@@ -133,7 +133,7 @@ class LICA:
 					return self.path_rules[tld][path]
 		
 		#extract URL chunks
-		words = set(findall("[a-z]{3,}", url)) #extract 3+ character words from the url
+		words = set(findall("[a-z]{3,}", url+" "+title)) #extract 3+ character words from the url
 		
 		#check that it is not a blacklisted path in a domain
 		domain_name = tldinfo.domain + tldinfo.suffix
