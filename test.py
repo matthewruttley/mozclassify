@@ -112,7 +112,7 @@ def output_stats(results):
 	
 	print "-"*50
 
-def test_algorithms():
+def test_algorithms(top_only=False):
 	"""Tests the algorithms on Moreover data"""
 	
 	#set up the connection and initialize the classifiers
@@ -138,8 +138,10 @@ def test_algorithms():
 			#now make sure the mappings point towards those pairs rather than strings
 			#the most useful format is mozcat to moreover
 			mozcat_to_moreover = defaultdict(set)
+			moreover_to_mozcat = {}
 			for k, v in load(mm).iteritems():
 				mozcat_to_moreover[tuple(reverse_tree[v])].update([k])
+				moreover_to_mozcat[k] = reverse_tree[v]
 	
 	#something to store the results in
 	results = defaultdict(lambda: {
@@ -156,6 +158,7 @@ def test_algorithms():
 			'dfr': dfr.classify(document['url']),
 			'lica': lica.classify(document['url']),
 			'dfr_title': dfr.classify(document['url'], title=document['title']),
+			'lica_title': lica.classify(document['url'], title=document['title']),
 			'dfr_title_rules_only': dfr.classify(document['url'], title=document['title'], rules_only=True),
 			'dfr_rules_only': dfr.classify(document['url'], rules_only=True),
 		}
@@ -165,13 +168,25 @@ def test_algorithms():
 			if decision[0] == 'uncategorized':
 				results[algorithm]['uncategorized'] += 1
 			else:
-				decision = mozcat_to_moreover[decision]
-				topics = set(document['topics'])
-				
-				if decision.intersection(topics):
-					results[algorithm]['correct'] += 1
+				if top_only:
+					
+					decision = decision[0] #get top level
+					topics = set([moreover_to_mozcat[x][0] for x in document['topics'] if x in moreover_to_mozcat])
+					#yn = True if decision in topics else False
+					#print str(yn) + " : " + decision[0] + " --> " + str(topics)
+					
+					if decision in topics:
+						results[algorithm]['correct'] += 1
+					else:
+						results[algorithm]['incorrect'] += 1
 				else:
-					results[algorithm]['incorrect'] += 1
+					decision = mozcat_to_moreover[decision]
+					topics = set(document['topics'])
+					
+					if decision.intersection(topics):
+						results[algorithm]['correct'] += 1
+					else:
+						results[algorithm]['incorrect'] += 1
 		
 		#output some stats occasionally
 		if n % 10000 == 0:
