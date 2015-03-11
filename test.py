@@ -47,6 +47,70 @@ def check_mappings():
 	else:
 		return True
 
+def test_functionality():
+	"""Tests the output of each algorithm for specific URLs, to make sure that they are returning correctly"""
+	
+	#{
+	#	"mozilla.org": {
+	#		"__ANY": [
+	#			["technology & computing", "general"]
+	#		]
+	#	},
+	#	"cartrade.com": {
+	#		"\/car-bike-news": [
+	#			["automotive", "general"]
+	#		]
+	#	},
+	#	"lifenews.com": {
+	#		"__ANY": [
+	#			["society", "general"]
+	#		]
+	#}
+	
+	#set things up
+	algorithms = [
+		{
+			"name": 'LICA',
+			"function_object": LICA(),
+			"correct": 0,
+			"incorrect": 0
+		},
+		{
+			"name": 'DFR',
+			"function_object": DFR(),
+			"correct": 0,
+			"incorrect": 0
+		},
+	]
+	
+	tests = [
+		{
+			"url": "https://advocacy.mozilla.org/open-web-fellows/",
+			"title": "Ford-Mozilla Open Web Fellows | Mozilla Advocacy",
+			"expectedResult": ('technology & computing', 'general')
+		},
+		{
+			"url": "http://www.budget-cruises.com/cruise/maldives",
+			"title": "Budget Cruises to the Maldives",
+			"expectedResult": ('travel', 'cruise vacations')
+		}
+	]
+	
+	correct = 0
+	incorrect = 0
+	for test in tests:
+		print test['url']
+		print test['title']
+		for a in range(len(algorithms)):
+			result = algorithms[a]['function_object'].classify(test['url'])
+			result = tuple(result)
+			if result == test['expectedResult']:
+				print "{0}: Correctly classified this as: {1}".format(algorithms[a]['name'], result)
+				algorithms[a]['correct'] += 1
+			else:
+				print "{0}: Incorrectly classified as: {1} when it should be {2}".format(algorithms[a]['name'], result, test['expectedResult'])
+				algorithms[a]['incorrect'] += 1
+
 def output_stats(results):
 	"""Outputs some stats from a results object in test_algorithms"""
 	
@@ -100,12 +164,15 @@ def test_algorithms():
 		})
 	
 	#iterate through the documents
-	for n, document in enumerate(db.find({'topics': {'$exists':True}}, {'url':1, 'topics':1})):
+	for n, document in enumerate(db.find({'topics': {'$exists':True}}, {'url':1, 'topics':1, 'title':1})):
 		
 		#classify (if they are in an object like this, they are easier to process)
 		decisions = {
-			'dfr': dfr.classify(document['url']),
-			'lica': lica.classify(document['url'])
+			#'dfr': dfr.classify(document['url']),
+			#'lica': lica.classify(document['url']),
+			#'dfr_title': dfr.classify(document['url'], title=document['title']),
+			'dfr_title_rules_only': dfr.classify(document['url'], title=document['title'], rules_only=True),
+			'dfr_rules_only': dfr.classify(document['url'], rules_only=True),
 		}
 		
 		for algorithm, decision in decisions.iteritems():
