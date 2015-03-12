@@ -112,6 +112,64 @@ def output_stats(results):
 	
 	print "-"*50
 
+def build_roc_curve_data(file_name):
+	"""	Creates ROC curve data from the output of test_algorithms
+		Note: Only works for binary classifiers
+		The best way to input data from this is to do:
+		> python -c "import test;test.test_algorithms()" > some_file.txt
+		> python -c "import test;test.build_roc_curve_data()"
+		"""
+
+	with open(file_name) as f:
+		
+		#will be stored like:
+		#{
+		#	'Some classifier': [
+		#		[tp, fp], [tp, fp]
+		#	]
+		#}
+		algorithms = defaultdict(list)
+		
+		#have to load the entire file into memory
+		for status in f.read().split("--------------------------------------------------"):
+			status = status.strip() 
+			if status:
+				#clean up each status
+				status = [x.strip() for x in status.split("\n") if x.strip() != ""][1:]
+				
+				for x in range(len(status)/6): #currently testing 6 algos
+					algo = status[6*x:(x*6)+6]
+					
+					correct = 0
+					incorrect = 0
+					name = ""
+					
+					for metric in algo:
+						if "Algorithm" in metric:
+							name = metric.split(": ")[1]
+						if "Correct" in metric:
+							correct = int(metric.split(": ")[1])
+						if "Incorrect" in metric:
+							incorrect = int(metric.split(": ")[1])
+					
+					#print line
+					#print correct, incorrect, name
+					
+					if correct + incorrect == 0:
+						true_positive_rate = 0
+						false_positive_rate = 0
+					else:
+						true_positive_rate = float(correct) / (correct + incorrect)
+						false_positive_rate = 1 - true_positive_rate
+					
+					algorithms[name].append([true_positive_rate, false_positive_rate])
+		
+		with open("roc.csv", 'w') as f:
+			for k,v in algorithms.iteritems():
+				f.write("{0}\t{1}\n".format(k+"_tp", k+"_fp"))
+				for x in v:
+					f.write("{0}\t{1}\n".format(x[0], x[1]))
+
 def test_algorithms(top_only=False):
 	"""Tests the algorithms on Moreover data"""
 	
