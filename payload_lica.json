@@ -626,7 +626,9 @@
             ],
             "islam": [
                 "muslim",
-                "islam"
+                "islam",
+                "mosque",
+                "hijab"
             ]
         },
         "pets": {
@@ -930,7 +932,11 @@
             "music": [
                 "music",
                 "song",
-                "singer"
+                "singer",
+                "hip-hop",
+                "rap",
+                "rapper",
+                "dj"
             ],
             "radio": [
                 "radio"
@@ -1176,11 +1182,18 @@
             "general": [
                 "military",
                 "army",
-                "navy"
+                "navy",
+                "national security",
+                "troops"
             ],
             "terrorism": [
                 "terrorist",
-                "terrorism"
+                "terrorism",
+                "isis",
+                "isil",
+                "jihad",
+                "jihadis",
+                "terrorists"
             ]
         },
         "history": {
