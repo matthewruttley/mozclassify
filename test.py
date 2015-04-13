@@ -170,13 +170,12 @@ def build_roc_curve_data(file_name):
 				for x in v:
 					f.write("{0}\t{1}\n".format(x[0], x[1]))
 
-def test_algorithms(top_only=False):
-	"""Tests the algorithms on Moreover data"""
-	
-	#set up the connection and initialize the classifiers
-	db = Connection("ec2-54-87-201-148.compute-1.amazonaws.com")['moreover']['docs']
-	lica = LICA()
-	dfr = DFR()
+def create_connection():
+	"""Creates and returns a connection to MongoDB"""
+	return Connection("ec2-54-87-201-148.compute-1.amazonaws.com")['moreover']['docs']
+
+def create_lookup_trees():
+	"""Creates a tree, reverse_tree, mozcat_to_moreover, moreover_to_mozcat"""
 	
 	#load the moreover to mozcat mappings (moreover uses a different dataset)
 	with open("moreover_to_mozcat.json") as mm:
@@ -201,6 +200,19 @@ def test_algorithms(top_only=False):
 				mozcat_to_moreover[tuple(reverse_tree[v])].update([k])
 				moreover_to_mozcat[k] = reverse_tree[v]
 	
+	return [tree, reverse_tree, mozcat_to_moreover, moreover_to_mozcat]
+
+
+def test_algorithms(top_only=False):
+	"""Tests the algorithms on Moreover data"""
+	
+	#set up the connection and initialize the classifiers
+	db = create_connection()
+	lica = LICA()
+	dfr = DFR()
+	
+	tree, reverse_tree, mozcat_to_moreover, moreover_to_mozcat = create_lookup_trees()
+	
 	#something to store the results in
 	results = defaultdict(lambda: {
 			"correct": 0,
@@ -209,7 +221,7 @@ def test_algorithms(top_only=False):
 		})
 	
 	#iterate through the documents
-	for n, document in enumerate(db.find({'topics': {'$exists':True}}, {'url':1, 'topics':1, 'title':1})):
+	for n, document in enumerate(db.find({'topics': {'$exists':True}}, {'url':1, 'topics':1, 'title':1, 'content':1})):
 		
 		#classify (if they are in an object like this, they are easier to process)
 		decisions = {
@@ -217,6 +229,8 @@ def test_algorithms(top_only=False):
 			'lica': lica.classify(document['url']),
 			'dfr_title': dfr.classify(document['url'], title=document['title']),
 			'lica_title': lica.classify(document['url'], title=document['title']),
+			'dfr_content': dfr.classify(document['url'], title=document['content']),
+			'lica_content': lica.classify(document['url'], title=document['content']),
 			'dfr_title_rules_only': dfr.classify(document['url'], title=document['title'], rules_only=True),
 			'dfr_rules_only': dfr.classify(document['url'], rules_only=True),
 		}
